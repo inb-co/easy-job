@@ -1,7 +1,7 @@
 import logging
 from unittest import mock
 from unittest.case import TestCase
-from poseidon.result_backends.log import LogResultBackend
+from joob.result_backends.log import LogResultBackend
 
 __author__ = 'Apollo'
 

@@ -3,8 +3,8 @@ import logging
 import pickle
 from unittest import mock
 from unittest.case import TestCase
-from poseidon.workers.mpqueue import MPQueueWorker, MPQueueInitializer
-from poseidon.workers.rabbitmq import RabbitMQWorker, RabbitMQInitializer
+from joob.workers.mpqueue import MPQueueWorker, MPQueueInitializer
+from joob.workers.rabbitmq import RabbitMQWorker, RabbitMQInitializer
 
 __author__ = 'Apollo'
 
@@ -18,7 +18,7 @@ class RabbitMQWorkerTestCase(TestCase):
         rabbitmq_configs = {}
         serialization_method = "json"
         result_backend = {
-            "result_backend_class": "poseidon.result_backends.dummy.DummyBackend",
+            "result_backend_class": "joob.result_backends.dummy.DummyBackend",
         }
         logger = "sample_logger"
         channel = mock.MagicMock()
@@ -46,7 +46,7 @@ class RabbitMQWorkerTestCase(TestCase):
         rabbitmq_configs = {}
         serialization_method = "json"
         result_backend = {
-            "result_backend_class": "poseidon.result_backends.dummy.DummyBackend"
+            "result_backend_class": "joob.result_backends.dummy.DummyBackend"
         }
         logger = "sample_logger"
         m = import_string.return_value = mock.MagicMock()
@@ -77,7 +77,7 @@ class RabbitMQWorkerTestCase(TestCase):
         rabbitmq_configs = {}
         serialization_method = "pickle"
         result_backend = {
-            "result_backend_class": "poseidon.result_backends.dummy.DummyBackend"
+            "result_backend_class": "joob.result_backends.dummy.DummyBackend"
         }
         logger = "sample_logger"
         m = import_string.return_value = mock.MagicMock()
@@ -109,7 +109,7 @@ class RabbitMQWorkerTestCase(TestCase):
         rabbitmq_configs = {}
         serialization_method = "invalid"
         result_backend = {
-            "result_backend_class": "poseidon.result_backends.dummy.DummyBackend",
+            "result_backend_class": "joob.result_backends.dummy.DummyBackend",
         }
         logger = getLogger.return_value = mock.MagicMock()
         # Act
@@ -125,7 +125,7 @@ class RabbitMQWorkerTestCase(TestCase):
         logger.log.assert_called_once_with(logging.ERROR, mock.ANY)
 
     @mock.patch("logging.getLogger")
-    @mock.patch("poseidon.workers.rabbitmq.call_with_retry")
+    @mock.patch("joob.workers.rabbitmq.call_with_retry")
     @mock.patch("django.utils.module_loading.import_string")
     @mock.patch("time.time")
     def test_normal_rabbitmq_worker_callback_with_retry(self, time, import_string, call_with_retry, getLogger):
@@ -209,7 +209,7 @@ class RabbitMQWorkerTestCase(TestCase):
 class RabbitMQInitializerTestCase(TestCase):
     @mock.patch("logging.getLogger")
     @mock.patch("multiprocessing.Process")
-    @mock.patch("poseidon.workers.rabbitmq.RabbitMQRunner")
+    @mock.patch("joob.workers.rabbitmq.RabbitMQRunner")
     def test_normal_start(self, runner, process, getLogger):
         assert isinstance(process, mock.MagicMock)
         # Arrange
@@ -217,7 +217,7 @@ class RabbitMQInitializerTestCase(TestCase):
         logger = getLogger.return_value = mock.MagicMock()
         expected_result = runner.return_value = "SOME_RETURN_VALUE"
         result_backend = {
-            'result_backend_class': 'poseidon.result_backends.dummy.DummyBackend'
+            'result_backend_class': 'joob.result_backends.dummy.DummyBackend'
         }
         # Act
         initializer = RabbitMQInitializer(count=process_count, logger="logger", result_backend=result_backend,
@@ -264,7 +264,7 @@ class MPQueueWorkerTestCase(TestCase):
         mpq.log.assert_called_once_with(logging.DEBUG, "{} finished in {} seconds ".format(function_dot_path, 0))
 
     @mock.patch("logging.getLogger")
-    @mock.patch("poseidon.workers.mpqueue.call_with_retry")
+    @mock.patch("joob.workers.mpqueue.call_with_retry")
     @mock.patch("django.utils.module_loading.import_string")
     @mock.patch("time.time")
     def test_normal_mpqueue_worker_callback_with_retry(self, time, import_string, call_with_retry, getLogger):
@@ -346,8 +346,8 @@ class MPQueueInitializerTestCase(TestCase):
     @mock.patch("multiprocessing.Queue")
     @mock.patch("multiprocessing.Process")
     @mock.patch("logging.getLogger")
-    @mock.patch("poseidon.workers.mpqueue.MPQueueWorker")
-    @mock.patch("poseidon.workers.mpqueue.MPQueueRunner")
+    @mock.patch("joob.workers.mpqueue.MPQueueWorker")
+    @mock.patch("joob.workers.mpqueue.MPQueueRunner")
     def test_initializer_start_method(self, mpqr: mock.MagicMock,
                                       mpqw: mock.MagicMock,
                                       getLogger: mock.MagicMock,
@@ -367,7 +367,7 @@ class MPQueueInitializerTestCase(TestCase):
         Queue.assert_called_once_with()
         logger.log.assert_called_once_with(logging.DEBUG, "Starting {} MPQueue workers...".format(proc_count))
         mpqw.assert_has_calls([mock.call(logger=mock.ANY, queue=mock.ANY, result_backend=mock.ANY)] * proc_count)
-        from poseidon.workers.mpqueue import worker
+        from joob.workers.mpqueue import worker
         Process.assert_has_calls(
             [
                 mock.call(args=mock.ANY, name=mock.ANY, target=worker),
@@ -378,11 +378,11 @@ class MPQueueInitializerTestCase(TestCase):
 
 
 class CommonTestCase(TestCase):
-    @mock.patch("poseidon.workers.common.Retrying")
+    @mock.patch("joob.workers.common.Retrying")
     def test_call_a_function_with_some_retry_parameters(self, Retrying):
         # Arrange
         func = mock.MagicMock()
-        from poseidon.workers.common import call_with_retry as target
+        from joob.workers.common import call_with_retry as target
         retrying_params = {
             "wait_random_min": 100,
             "wait_random_max": 500,
@@ -398,7 +398,7 @@ class CommonTestCase(TestCase):
         # Arrange
         function_side_effects = [Exception(), Exception(), "finally worked"]
         func = mock.MagicMock(side_effect=function_side_effects)
-        from poseidon.workers.common import call_with_retry as target
+        from joob.workers.common import call_with_retry as target
         retrying_params = {
             "stop_max_attempt_number": 5
         }
@@ -417,7 +417,7 @@ class CommonTestCase(TestCase):
         # Arrange
         function_side_effects = [IndentationError(), SyntaxError(), OSError()]
         func = mock.MagicMock(side_effect=function_side_effects)
-        from poseidon.workers.common import call_with_retry as target
+        from joob.workers.common import call_with_retry as target
         retrying_params = {
             "stop_max_attempt_number": 3
         }
