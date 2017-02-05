@@ -3,3 +3,4 @@ django==1.9.12
 retrying
 pika
 pika_pool
+
