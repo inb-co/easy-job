@@ -1,6 +1,8 @@
-from distutils.core import setup
-from setuptools.command.test import test as TestCommand
 import sys
+from distutils.core import setup
+
+import setuptools
+from setuptools.command.test import test as TestCommand
 
 
 class PyTest(TestCommand):
@@ -14,13 +16,16 @@ class PyTest(TestCommand):
         errcode = pytest.main(self.test_args)
         sys.exit(errcode)
 
-
 setup(
     name='easy_job',
-    packages=['easy_job'],
-    version='0.1.1',
+    packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
+    version='0.1.4',
     description='A lightweight background task runner',
     author='Mahdi Zareie',
+    install_requires=["django==1.9.12",
+                      "retrying",
+                      "pika",
+                      "pika_pool"],
     author_email='mahdi.elf@gmail.com',
     url='https://github.com/inb-co/easy-job',
     keywords=['worker', 'task runner', 'lightweight job runner'],
