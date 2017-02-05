@@ -4,7 +4,7 @@ from unittest import mock
 import logging
 
 __author__ = 'Apollo'
-JOOB = {
+EASY_JOB = {
     "logger": "",  # < choose a logger
     "workers": {
         "worker1": {
@@ -36,9 +36,9 @@ JOOB = {
 }
 
 
-class JoobTestCase(TestCase):
+class EasyJobTestCase(TestCase):
     @mock.patch("django.utils.module_loading.import_string")
-    def test_joob_instantiate_initializers_correctly(self, import_string):
+    def test_easy_job_instantiate_initializers_correctly(self, import_string):
         assert isinstance(import_string, mock.MagicMock)
         # Arrange
         initializer = mock.MagicMock()
@@ -46,15 +46,15 @@ class JoobTestCase(TestCase):
 
         # Act
         import copy
-        with self.settings(JOOB=copy.deepcopy(JOOB)):
-            from joob import init
+        with self.settings(EASY_JOB=copy.deepcopy(EASY_JOB)):
+            from easy_job import init
             init()
 
         # Assert
         _, args, kwargs = initializer.mock_calls[0]
-        self.assertNotEqual(kwargs, JOOB['workers']['worker1'])
-        kwargs["initializer"] = JOOB['workers']['worker1']['initializer']
-        self.assertEqual(kwargs, JOOB['workers']['worker1'])
+        self.assertNotEqual(kwargs, EASY_JOB['workers']['worker1'])
+        kwargs["initializer"] = EASY_JOB['workers']['worker1']['initializer']
+        self.assertEqual(kwargs, EASY_JOB['workers']['worker1'])
 
     @mock.patch("logging.getLogger")
     @mock.patch("django.utils.module_loading.import_string")
@@ -65,12 +65,12 @@ class JoobTestCase(TestCase):
         import_string.side_effect = ValueError("import failed")
         logger_mock = getLogger.return_value = mock.MagicMock()
         # Act
-        with self.settings(JOOB=copy.deepcopy(JOOB)):
-            from joob import init
+        with self.settings(EASY_JOB=copy.deepcopy(EASY_JOB)):
+            from easy_job import init
             init()
 
         # Assert
-        import_string.assert_called_once_with(JOOB['workers']['worker1']['initializer'])
+        import_string.assert_called_once_with(EASY_JOB['workers']['worker1']['initializer'])
         fatal_call = logger_mock.fatal.mock_calls[0]
         args = fatal_call[1]
         self.assertEqual(args[0], "invalid initializer specified for worker with name worker1")

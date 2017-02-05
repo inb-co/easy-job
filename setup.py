@@ -16,13 +16,13 @@ class PyTest(TestCommand):
 
 
 setup(
-    name='joob',
-    packages=['joob'],
+    name='easy_job',
+    packages=['easy_job'],
     version='0.1.0',
     description='A lightweight background task runner',
     author='Mahdi Zareie',
     author_email='mahdi.elf@gmail.com',
-    url='https://github.com/inb-co/joob',
+    url='https://github.com/inb-co/easy_job',
     keywords=['worker', 'task runner', 'lightweight job runner'],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

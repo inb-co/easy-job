@@ -1,7 +1,7 @@
 import logging
 from unittest import mock
 from unittest.case import TestCase
-from joob.result_backends.log import LogResultBackend
+from easy_job.result_backends.log import LogResultBackend
 
 __author__ = 'Apollo'
 
