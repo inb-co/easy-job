@@ -18,7 +18,7 @@ class PyTest(TestCommand):
 setup(
     name='easy_job',
     packages=['easy_job'],
-    version='0.1.0',
+    version='0.1.1',
     description='A lightweight background task runner',
     author='Mahdi Zareie',
     author_email='mahdi.elf@gmail.com',
