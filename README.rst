@@ -1,8 +1,8 @@
-Poseidon
+Easy-Job
 ========
 
 A lightweight background task runner for python
 
 TODO List
 =========
-* Make Poseidon independent from django
+* Make Easy-Job independent from django
