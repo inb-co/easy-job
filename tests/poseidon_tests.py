@@ -47,7 +47,7 @@ class PoseidonTestCase(TestCase):
         # Act
         import copy
         with self.settings(POSEIDON=copy.deepcopy(POSEIDON)):
-            from poseidon_async import init
+            from poseidon import init
             init()
 
         # Assert
@@ -66,7 +66,7 @@ class PoseidonTestCase(TestCase):
         logger_mock = getLogger.return_value = mock.MagicMock()
         # Act
         with self.settings(POSEIDON=copy.deepcopy(POSEIDON)):
-            from poseidon_async import init
+            from poseidon import init
             init()
 
         # Assert

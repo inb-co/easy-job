@@ -26,7 +26,7 @@ from django.utils.functional import SimpleLazyObject
 import pika
 import pika_pool
 import time
-from poseidon_async.workers.mixins import StoreResultMixin, LoggerMixin
+from poseidon.workers.mixins import StoreResultMixin, LoggerMixin
 from .common import call_with_retry
 __author__ = 'Apollo'
 

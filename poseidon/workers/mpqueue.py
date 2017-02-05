@@ -5,13 +5,13 @@ available options to use
         default: MPQueueProcess_{index}
 
 """
-from poseidon_async.workers.common import call_with_retry
+from poseidon.workers.common import call_with_retry
 from . import BaseInitializer, BaseRunner
 import logging
 from queue import Empty
 import os
 import time
-from poseidon_async.workers.mixins import LoggerMixin, StoreResultMixin
+from poseidon.workers.mixins import LoggerMixin, StoreResultMixin
 
 __author__ = 'Apollo'
 

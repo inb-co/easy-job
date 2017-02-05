@@ -42,7 +42,7 @@
         WORKER_NAME :
             worker name is a custom name which you specify for the worker , later you will use this name to send
             tasks to the worker , for example if you name your worker my_worker then later in your code you can :
-            import poseidon_async as poseidon
+            import poseidon as poseidon
             runner = poseidon.getRunner("my_worker")
             runner.run("path.to.your.function", args=('unnamed','parameters','here'), kwargs={'named':'parameters'} )
         type :
@@ -88,11 +88,11 @@
     - >  Step 2: call init() in wsgi.py
 
         open your wsgi.py file and add the following:
-            import poseidon_async as poseidon
+            import poseidon as poseidon
             poseidon.init()
 
     - > Step 3: run your tasks asynchronously anywhere in your django project
-        import poseidon_async as poseidon
+        import poseidon as poseidon
         runner = poseidon.getRunner("my_worker") # the worker name you want to send your tasks
         runner.run(
                 "path.to.your.function",
@@ -160,7 +160,7 @@ def init(run_woker=True):
         # noinspection PyPep8Naming
         try:
             if 'result_backend' not in worker_options or worker_options['result_backend'] is None:
-                worker_options['result_backend'] = "poseidon_async.result_backends.dummy.DummyBackend"
+                worker_options['result_backend'] = "poseidon.result_backends.dummy.DummyBackend"
             WorkerInitializerClass = import_string(worker_options.pop('initializer'))
             worker = WorkerInitializerClass(**worker_options)
             runners[worker_name] = worker.start(not run_woker)
