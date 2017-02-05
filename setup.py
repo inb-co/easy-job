@@ -22,7 +22,7 @@ setup(
     description='A lightweight background task runner',
     author='Mahdi Zareie',
     author_email='mahdi.elf@gmail.com',
-    url='https://github.com/inb-co/easy_job',
+    url='https://github.com/inb-co/easy-job',
     keywords=['worker', 'task runner', 'lightweight job runner'],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
