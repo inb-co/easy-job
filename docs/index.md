@@ -163,8 +163,8 @@ a few thing you need to remember when using callbacks:
 
 1. parameter name conflict
 do not name your parameters `result` or `logger` , the worker will use these names for:
-* result: the result of the main function
-* logger: some logger object
+        * result: the result of the main function
+        * logger: some logger object
 so watch out for parameters with the same name because they will be overwritten by these values
 if you don't have `**kwargs` in your callback function or you dont have these parameters defined , calling your
 callback will raise exception.
