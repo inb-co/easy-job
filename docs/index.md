@@ -166,8 +166,6 @@ do not name your parameters `result` or `logger` , the worker will use these nam
 * result: the result of the main function
 * logger: some logger object
 so watch out for parameters with the same name because they will be overwritten by these values
-2. task failure means no callback invocation
-failure of your task will result on ignoring callback invocation
 if you don't have `**kwargs` in your callback function or you dont have these parameters defined , calling your
 callback will raise exception.
 a good callback function :
@@ -177,9 +175,10 @@ def i_am_callback(*args, **kwargs):
     # do some stuff with the result
     return result
 ```
-
-3. Result
-if you specify callback , for your task the return value of the callback will be sent to the result backend instead of your primary function
+2. task failure means no callback invocation            
+failure of your task will result on ignoring callback invocation
+3. Result               
+if you specify callback for your task ,the return value of the callback will be sent to the result backend instead of your primary function
 
 
 
