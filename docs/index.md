@@ -1,6 +1,6 @@
 Easy-Job
 ========
-Easy-Job is asynchronous task runner for django , it means you can run a function without waiting for the function to finish .
+Easy-Job is asynchronous task runner for django , it means you can run a function without waiting for the function to finish.
 
 *Notice : current design of easy-job depends on django framework but in the near future we intend to break this dependency*
 
@@ -52,7 +52,7 @@ three simple steps are required to make setup easy-job in your django project :
                     }
         }
 
-let me explain what these configurations are from top  :	
+Configuration explanation:	
 
  - key of dictionary : worker name is a custom name which you specify for the worker , later you will use this name to send tasks to this particular worker.
  - initializer: the dot.path to worker initializer class, you can use one of :    `easy_job.workers.rabbitmq.RabbitMQInitializer` 
@@ -99,7 +99,7 @@ easy_job.init()
 ```
 this little code will initialize easy-job and create all your workers .
 
-####3.run your tasks
+####3. run your tasks
 
 somewhere in your project you can run your tasks:
 
@@ -112,7 +112,7 @@ runner.run(
         kwargs={'named':'parameters'}
 )
 ```
-that's it
+and that's it
 ##Some more options :
 
 ####Specifying retry policy when running tasks :
