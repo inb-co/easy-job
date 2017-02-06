@@ -8,7 +8,7 @@ Easy-Job is asynchronous task runner for django , it means you can run a functio
 ***How to setup Easy-Job in a django project***
 
 three simple steps are required to make setup easy-job in your django project :
-****1. first open your settings file and add the following:****
+####1. first open your settings file and add the following:
 
         EASY_JOB = {
             "easy_job_logger": "easy_job",  # the logger name which easy_job itself will be using
@@ -201,20 +201,20 @@ in this particular example which we are using RabbitMQ the following options are
     * queue_name : name of rabbitMQ queue to use for transferring messages between main process and workers
     * serialization_method : method of serialization , could be :code:`json` or *pickle*
     * rabbitmq_configs : configurations related to rabbitmq , following is an example configuration:
-    ```
-    {
-        "connection_pool_configs": {
-            "max_size": 10,
-            "max_overflow": 10,
-            "timeout": 10,
-            "recycle": 3600,
-            "stale": 45
-        },
-        "connection_parameters": {
-            "host": "127.0.0.1"
-        }
+```
+{
+    "connection_pool_configs": {
+        "max_size": 10,
+        "max_overflow": 10,
+        "timeout": 10,
+        "recycle": 3600,
+        "stale": 45
+    },
+    "connection_parameters": {
+        "host": "127.0.0.1"
     }
-    ```
+}
+```
 ****2. call init() in wsgi.py****
 open your wsgi.py file and add the following:
 ```
