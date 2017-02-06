@@ -160,7 +160,9 @@ runner.run(
 )
 ```
 a few thing you need to remember when using callbacks:
+
 1. parameter name conflict
+
 do not name your parameters `result` or `logger` , the worker will use these names for:
     * result: the result of the main function
     * logger: some logger object
