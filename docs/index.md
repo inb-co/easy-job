@@ -95,7 +95,7 @@ in this particular example which we are using RabbitMQ the following options are
         }
     }
     ```
-****2. call init() in wsgi.py****
+####2. call init() in wsgi.py
 open your wsgi.py file and add the following:
 ```
 import easy_job as easy_job
@@ -103,7 +103,7 @@ easy_job.init()
 ```
 this little code will initialize easy-job and create all your workers .
 
-****3.run your tasks****
+####3.run your tasks
 somewhere in your project you can run your tasks:
 
 ```
@@ -125,10 +125,10 @@ Easy-Job is asynchronous task runner for django , it means you can run a functio
 *Notice : current design of easy-job depends on django framework but in the near future we intend to break this dependency*
 
 
-***How to setup Easy-Job in a django project***
+###How to setup Easy-Job in a django project
 
 three simple steps are required to make setup easy-job in your django project :
-****1. first open your settings file and add the following:****
+####1. first open your settings file and add the following:
 
         EASY_JOB = {
             "easy_job_logger": "easy_job",  # the logger name which easy_job itself will be using
@@ -215,7 +215,7 @@ in this particular example which we are using RabbitMQ the following options are
     }
 }
 ```
-****2. call init() in wsgi.py****
+####2. call init() in wsgi.py
 open your wsgi.py file and add the following:
 ```
 import easy_job as easy_job
@@ -223,7 +223,7 @@ easy_job.init()
 ```
 this little code will initialize easy-job and create all your workers .
 
-****3.run your tasks****
+####3.run your tasks
 somewhere in your project you can run your tasks:
 
 ```
@@ -238,9 +238,9 @@ runner.run(
 
 that's it
 
-***Some more options :***
+###Some more options :
 
-****Specifying retry policy when running tasks :****
+####Specifying retry policy when running tasks :
 easy-job used retrying package to perform retrying on failure , if you intend to use this feature you should call `run()`
 function with `retry_policy` parameter , like this :
 ```
@@ -261,7 +261,7 @@ please read [retrying documentation](https://pypi.python.org/pypi/retrying) for 
 *warning: do not use an empty `retry_policy` dictionary , if you don't need retrying just don't send this parameter otherwise an empty dictionary means try forever*
 
 
-****Specifying callback function for tasks :****
+####Specifying callback function for tasks :
 you can also specify a callback function if you wish , you just need to provide callback parameter like this:
 ```
 runner.run(
