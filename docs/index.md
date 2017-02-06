@@ -106,6 +106,7 @@ easy_job.init()
 this little code will initialize easy-job and create all your workers .
 
 ####3.run your tasks
+
 somewhere in your project you can run your tasks:
 
 ```
