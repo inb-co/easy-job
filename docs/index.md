@@ -52,21 +52,17 @@ three simple steps are required to make setup easy-job in your django project :
                     }
         }
 
-let me explain what these configurations are from top  :
-* worker1: worker name
-    worker name is a custom name which you specify for the worker , later you will use this name to send
-    tasks to this particular worker.
-* initializer: worker initializer class path
-    the dot.path to worker initializer class, you can use one of :
-    `easy_job.workers.rabbitmq.RabbitMQInitializer` or `easy_job.workers.mpqueue.MPQueueInitializer`
-    or you can create your own initializer
-* count :
-    how many worker of this type you need
-* logger: name of logger for this worker
+let me explain what these configurations are from top  :	
+
+ - key of dictionary : worker name is a custom name which you specify for the worker , later you will use this name to send tasks to this particular worker.
+ - initializer: the dot.path to worker initializer class, you can use one of :    `easy_job.workers.rabbitmq.RabbitMQInitializer` 
+ or 
+ `easy_job.workers.mpqueue.MPQueueInitializer`
+ or you can create your own initializer
+ - count : how many worker of this type you need    
+ - logger: name of logger for this worker
     name of the logger which workers will send their logs to it (it's different than result log)
-* result_backend:
-if you like to store the result of each task you can set result backend but generally result backend is optional.
-to configure your result backend you need to provide
+ - result_backend: if you like to store the result of each task you can set result backend but generally result backend is optional. to configure your result backend you need to provide
     * result_backend_class :
             type of result backend ,
                 you can use `poseidon_async.result_backends.log.LogResultBackend` or create your
@@ -74,9 +70,7 @@ to configure your result backend you need to provide
     * options:
             options for the selected result backend , for example a Log result backend needs log_level and logger_name
             but later another result backend may need other options
-* options:
-depending on the type of worker you chose ,it may have special options and configurations you can provide them in
-this dictionary.
+ - options: depending on the type of worker you chose ,it may have special options and configurations you can provide them in this dictionary.
 in this particular example which we are using RabbitMQ the following options are available:
     * queue_name : name of rabbitMQ queue to use for transferring messages between main process and workers
     * serialization_method : method of serialization , could be :code:`json` or *pickle*
@@ -118,9 +112,7 @@ runner.run(
         kwargs={'named':'parameters'}
 )
 ```
-
 that's it
-
 ##Some more options :
 
 ####Specifying retry policy when running tasks :
@@ -161,13 +153,14 @@ runner.run(
 ```
 a few thing you need to remember when using callbacks:
 
-1. parameter name conflict
+1. parameter name conflict		
 do not name your parameters `result` or `logger` , the worker will use these names for:
-        * result: the result of the main function
-        * logger: some logger object
+	* result: the result of the main function       
+    * logger: some logger object		
+		    
 so watch out for parameters with the same name because they will be overwritten by these values
 if you don't have `**kwargs` in your callback function or you dont have these parameters defined , calling your
-callback will raise exception.
+callback will raise exception.		
 a good callback function :
 ```
 def i_am_callback(*args, **kwargs):
@@ -179,6 +172,8 @@ def i_am_callback(*args, **kwargs):
 failure of your task will result on ignoring callback invocation
 3. Result               
 if you specify callback for your task ,the return value of the callback will be sent to the result backend instead of your primary function
+
+
 
 
 
