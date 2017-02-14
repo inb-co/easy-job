@@ -22,7 +22,7 @@ setup(
     version='0.1.4',
     description='A lightweight background task runner',
     author='Mahdi Zareie',
-    install_requires=["django==1.9.12",
+    install_requires=["django>=1.9.0",
                       "retrying",
                       "pika",
                       "pika_pool"],
