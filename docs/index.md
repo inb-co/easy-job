@@ -8,56 +8,35 @@ Easy-Job is asynchronous task runner for django , it means you can run a functio
 ***How to setup Easy-Job in a django project***
 
 three simple steps are required to make setup easy-job in your django project :
-####1. first open your settings file and add the following:
-
-        EASY_JOB = {
-            "easy_job_logger": "easy_job",  # the logger name which easy_job itself will be using
-            "workers": {}
-        }
-    the inside workers you need to define your workers.
-        .. code-block:: python
+#### 1. first open your settings file and add the following:
 
         # inside workers dictionary
         EASY_JOB = {
-                    "easy_job_logger": "easy_job",  # the logger name which easy_job itself will be using
-                    "workers": {
-                        "worker1": {
-                                "initializer": "easy_job.workers.rabbitmq.RabbitMQInitializer",
-                                "count": 3,
-                                "logger_name": "sample_worker",
-                                "result_backend": {
-                                    "type": "Log",
-                                    "options": {
-                                        "logger_name": "sample_worker",
-                                        "log_level": logging.DEBUG
-                                    }
-                                },
-                                "options": {
-                                    'queue_name': 'sample_works2',
-                                    "serialization_method": "pickle",
-                                    "rabbitmq_configs": {
-                                        "connection_pool_configs": {
-                                            "max_size": 10,
-                                            "max_overflow": 10,
-                                            "timeout": 10,
-                                            "recycle": 3600,
-                                            "stale": 45
-                                        },
-                                        "connection_parameters": {
-                                            "host": "127.0.0.1"
-                                        }
-                                    }
-                                }
-                        },
-                    }
+            "easy_job_logger": "",  # the logger name which easy_job itself will be using
+            "workers": {
+                "worker1": {
+                    "initializer": "easy_job.workers.mtqueue.MTQueueInitializer",
+                    "count": 3,
+                    "logger": "",
+                    "result_backend": {
+                        "result_backend_class": "easy_job.result_backends.log.LogResultBackend",
+                        "options": {
+                            "logger": "",
+                            "log_level": logging.DEBUG
+                        }
+                    },
+                    "options": {}
+                },
+            }
         }
-
-Configuration explanation:	
+Configuration explanation:
 
  - key of dictionary : worker name is a custom name which you specify for the worker , later you will use this name to send tasks to this particular worker.
- - initializer: the dot.path to worker initializer class, you can use one of :    `easy_job.workers.rabbitmq.RabbitMQInitializer` 
- or 
- `easy_job.workers.mpqueue.MPQueueInitializer`
+ - initializer: the dot.path to worker initializer class, you can use one of :    `easy_job.workers.rabbitmq.RabbitMQInitializer`  to use rabbitmq
+ or
+ `easy_job.workers.mpqueue.MPQueueInitializer` to use python multiprocessing queue
+ or
+ `easy_job.workers.mtqueue.MTQueueInitializer` to use python multithreading queue
  or you can create your own initializer
  - count : how many worker of this type you need    
  - logger: name of logger for this worker
