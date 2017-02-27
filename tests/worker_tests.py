@@ -4,6 +4,7 @@ import pickle
 from unittest import mock
 from unittest.case import TestCase
 from easy_job.workers.mpqueue import MPQueueWorker, MPQueueInitializer
+from easy_job.workers.mtqueue import MTQueueWorker, MTQueueInitializer
 from easy_job.workers.rabbitmq import RabbitMQWorker, RabbitMQInitializer
 
 __author__ = 'Apollo'
@@ -375,6 +376,149 @@ class MPQueueInitializerTestCase(TestCase):
             ] * proc_count
         )
         mpqr.assert_called_once_with(queue=queue, logger=mock.ANY)
+
+
+# noinspection PyCallByClass
+class MTQueueWorkerTestCase(TestCase):
+    @mock.patch("django.utils.module_loading.import_string")
+    @mock.patch("time.time")
+    def test_normal_mtqueue_worker_callback(self, time, import_string):
+        # Arrange
+        time.return_value = 0
+        m = import_string.return_value = mock.MagicMock()
+        m.return_value = "Some result"
+        function_dot_path = "some.function"
+        body = {
+            "function": function_dot_path,
+            "parameters": {
+                "args": (1, 2, 3),
+                "kwargs": {
+                    "a": 1,
+                    "b": 2
+                }
+            }
+        }
+        mtq = mock.MagicMock()
+        # Act
+
+        MTQueueWorker.callback(mtq, body)
+
+        # Assert
+        m.assert_called_once_with(1, 2, 3, a=1, b=2)
+        mtq.store_result.assert_called_once_with(function_dot_path, 'Some result')
+        mtq.log.assert_called_once_with(logging.DEBUG, "{} finished in {} seconds ".format(function_dot_path, 0))
+
+    @mock.patch("logging.getLogger")
+    @mock.patch("easy_job.workers.mtqueue.call_with_retry")
+    @mock.patch("django.utils.module_loading.import_string")
+    @mock.patch("time.time")
+    def test_normal_mtqueue_worker_callback_with_retry(self, time, import_string, call_with_retry, getLogger):
+        # Arrange
+        time.return_value = 0
+        m = import_string.return_value
+        logger = getLogger.return_value
+        call_with_retry.return_value = "Some result"
+        function_dot_path = "some.function"
+        args = (1, 2, 3)
+        retry_policy = {}
+        kwargs = {
+            "a": 1,
+            "b": 2
+        }
+        body = {
+            "function": function_dot_path,
+            "parameters": {
+                "args": args,
+                "kwargs": kwargs,
+                "retry_policy": retry_policy
+            }
+        }
+        mtq = mock.MagicMock()
+        # Act
+
+        MTQueueWorker.callback(mtq, body)
+
+        # Assert
+        m.assert_not_called()
+        call_with_retry.assert_called_once_with(m, args, kwargs, retry_policy)
+        mtq.store_result.assert_called_once_with(function_dot_path, 'Some result')
+        mtq.log.assert_called_once_with(logging.DEBUG, "{} finished in {} seconds ".format(function_dot_path, 0))
+
+    @mock.patch("logging.getLogger")
+    @mock.patch("django.utils.module_loading.import_string")
+    @mock.patch("time.time")
+    def test_mtqueue_worker_with_callback_parameter(self, time, import_string, getLogger):
+        # Arrange
+        time.return_value = 0
+        main_function, callback_function = import_string.side_effect = mock.MagicMock(), mock.MagicMock()
+        main_function.return_value = "Main function return value"
+        callback_function.return_value = "Callback function return value"
+        function_dot_path = "some.function"
+        args = (1, 2, 3)
+        kwargs = {
+            "a": 1,
+            "b": 2
+        }
+        body = {
+            "function": function_dot_path,
+            "parameters": {
+                "args": args,
+                "kwargs": kwargs,
+                "callback": {
+                    "function": "some.callback.function",
+                    "args": (1,),
+                    "kwargs": {
+                        "test": True
+                    }
+                }
+            }
+        }
+        mtq = mock.MagicMock()
+        mtq.deserialize = lambda x: x  # convert deserializer to identity function
+        # Act
+
+        MTQueueWorker.callback(mtq, body)
+
+        # Assert
+        main_function.assert_called_once_with(1, 2, 3, a=1, b=2)
+        callback_function.assert_called_once_with(1, logger=mock.ANY, result='Main function return value', test=True)
+        mtq.store_result.assert_called_once_with(function_dot_path, 'Callback function return value')
+        mtq.log.assert_called_once_with(logging.DEBUG, "{} finished in {} seconds ".format(function_dot_path, 0))
+
+
+# noinspection PyCallByClass
+class MTQueueInitializerTestCase(TestCase):
+    @mock.patch("queue.Queue")
+    @mock.patch("threading.Thread")
+    @mock.patch("logging.getLogger")
+    @mock.patch("easy_job.workers.mtqueue.MTQueueWorker")
+    @mock.patch("easy_job.workers.mtqueue.MTQueueRunner")
+    def test_initializer_start_method(self, mtqr: mock.MagicMock,
+                                      mtqw: mock.MagicMock,
+                                      getLogger: mock.MagicMock,
+                                      Thread: mock.MagicMock,
+                                      Queue: mock.MagicMock):
+        # Arrange
+        logger = getLogger.return_value = mock.MagicMock()
+        queue = Queue.return_value = mock.MagicMock()
+        thrd_count = 4
+        this = mock.MagicMock(count=thrd_count)
+        mtqr.return_value = "Expect this"
+        # Act
+        result = MTQueueInitializer.start(this)
+
+        # Assert
+        self.assertEqual(result, mtqr.return_value)
+        Queue.assert_called_once_with()
+        logger.log.assert_called_once_with(logging.DEBUG, "Starting {} MTQueue workers...".format(thrd_count))
+        mtqw.assert_has_calls([mock.call(logger=mock.ANY, queue=mock.ANY, result_backend=mock.ANY)] * thrd_count)
+        Thread.assert_has_calls(
+            [
+                mock.call(args=mock.ANY, target=mock.ANY),
+                mock.call().start()
+            ] * thrd_count
+        )
+        mtqr.assert_called_once_with(queue=queue, logger=mock.ANY)
 
 
 class CommonTestCase(TestCase):
