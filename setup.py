@@ -19,7 +19,7 @@ class PyTest(TestCommand):
 setup(
     name='easy_job',
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
-    version='0.1.4',
+    version='0.1.5',
     description='A lightweight background task runner',
     author='Mahdi Zareie',
     install_requires=["django>=1.9.0",
