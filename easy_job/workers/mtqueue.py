@@ -14,10 +14,6 @@ from easy_job.workers.mixins import LoggerMixin, StoreResultMixin
 __author__ = 'Apollo'
 
 
-def worker(worker_instance):
-    worker_instance.run()
-
-
 class MTQueueWorker(StoreResultMixin):
     def __init__(self, queue, *args, **options):
         self.queue = queue
