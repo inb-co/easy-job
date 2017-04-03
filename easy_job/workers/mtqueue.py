@@ -35,7 +35,7 @@ class MTQueueWorker(StoreResultMixin):
             function = import_string(function_dot_path)
             self.log(logging.DEBUG, "MTQueueWorker.callback , function to run {}->{}".format(function, type(function)))
             if callable(function):
-                self.log(logging.DEBUG,"MTQueueWorker.callback , {} is callable let's run it".format(function))
+                self.log(logging.DEBUG, "MTQueueWorker.callback , {} is callable let's run it".format(function))
                 before = time.time()
                 if retry_policy is not None:
                     result = call_with_retry(function, args, kwargs, retry_policy)
@@ -70,9 +70,11 @@ class MTQueueWorker(StoreResultMixin):
         self.log(logging.DEBUG, "getting into a Loop")
         while True:
             try:
-                self.callback(self.queue.get(timeout=2))
+                task = self.queue.get(timeout=2)
+                self.log(logging.DEBUG, "MTQueueWorker.run() -> TASK REACH THE WORKER")
+                self.log(logging.DEBUG, "MTQueueWorker.run() -> task is {}, {}".format(task, type(task)))
+                self.callback(task)
             except Empty:
-                self.log(logging.DEBUG, "self.callback(self.queue.get(timeout=2)) ...timeout over , looping again")
                 pass
 
 
