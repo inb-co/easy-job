@@ -75,6 +75,7 @@ class MTQueueWorker(StoreResultMixin):
                 self.log(logging.DEBUG, "MTQueueWorker.run() -> task is {}, {}".format(task, type(task)))
                 self.callback(task)
             except Empty:
+                self.log(logging.DEBUG, "MTQueueWorker.run() -> in task in last 2 sec")
                 pass
 
 
@@ -88,7 +89,7 @@ class MTQueueInitializer(BaseInitializer):
                                            "queue object has been created : {} -> {}".format(queue, type(queue)))
         logging.getLogger(self.logger).log(logging.DEBUG, "Starting {} MTQueue workers...".format(self.count))
         if not no_runner:
-            logging.getLogger(self.logger).log(logging.DEBUG, "creating workers ...")
+            logging.getLogger(self.logger).log(logging.DEBUG, "MTQueueInitializer.start()::creating workers ...")
             for process_index in range(self.count):
                 worker_instance = MTQueueWorker(
                     result_backend=self.result_backend,
