@@ -3,6 +3,8 @@ Easy-Job worker based on RabbitMQ
 available options to use
     * queue_name: name of the underlying rabbitmq queue
         default: no default value available you have to specify queue name or ValueError will be raise
+    * use_threads: a boolean value indicating whether workers should be thread or process
+        default: the default value is False means workers will be process
     * serialization_method: method of serializing messages before putting them in the queue , can be json or pickle
         default: no default value available you have to specify serialization_method
     * rabbitmq_configs: a dictionary of rabbitmq related configurations consist of :
@@ -100,7 +102,10 @@ class RabbitMQWorker(StoreResultMixin):
 
 class RabbitMQInitializer(BaseInitializer):
     def start(self, no_runner=False):
-        from multiprocessing import Process
+        if self.options.pop('use_threads', False):
+            from threading import Thread as WorkerType
+        else:
+            from multiprocessing import Process as WorkerType
 
         serialization_method = self.options['serialization_method']
         if serialization_method == "json":
@@ -124,7 +129,7 @@ class RabbitMQInitializer(BaseInitializer):
                     **self.options
                 )
 
-                p = Process(target=worker, args=(worker_instance,))
+                p = WorkerType(target=worker, args=(worker_instance,))
                 p.daemon = True
                 p.start()
         return RabbitMQRunner(queue_name=self.options['queue_name'],
