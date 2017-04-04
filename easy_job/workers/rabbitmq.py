@@ -37,8 +37,9 @@ def worker(worker_instance):
     worker_instance.run()
 
 
+# noinspection PyDefaultArgument
 class RabbitMQWorker(StoreResultMixin):
-    def __init__(self, queue_name, rabbitmq_configs, serialization_method, *args, **kwargs):
+    def __init__(self, queue_name, rabbitmq_configs={}, serialization_method='json', *args, **kwargs):
         self.connection_params = rabbitmq_configs.get('connection_parameters', {})
         self.serialization_method = serialization_method
         self.queue_name = queue_name
@@ -134,7 +135,7 @@ class RabbitMQInitializer(BaseInitializer):
                 p.start()
         return RabbitMQRunner(queue_name=self.options['queue_name'],
                               serializer=serialization_method.dumps,
-                              rabbitmq_configs=self.options.pop("rabbitmq_configs"),
+                              rabbitmq_configs=self.options.pop("rabbitmq_configs", {}),
                               logger=self.logger)
 
 
