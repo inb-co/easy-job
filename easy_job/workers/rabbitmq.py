@@ -6,7 +6,7 @@ available options to use
     * use_threads: a boolean value indicating whether workers should be thread or process
         default: the default value is False means workers will be process
     * serialization_method: method of serializing messages before putting them in the queue , can be json or pickle
-        default: no default value available you have to specify serialization_method
+        default: json
     * rabbitmq_configs: a dictionary of rabbitmq related configurations consist of :
         * connection_pool_configs : which is another nested dictionary consist of :
             * max_size: Maximum number of connections to keep queued , default is 10
@@ -107,7 +107,7 @@ class RabbitMQInitializer(BaseInitializer):
         else:
             from multiprocessing import Process as WorkerType
 
-        serialization_method = self.options['serialization_method']
+        serialization_method = self.options.get('serialization_method', 'json')
         if serialization_method == "json":
             import json as serialization_method
         elif serialization_method == "pickle":
