@@ -234,6 +234,39 @@ class RabbitMQInitializerTestCase(TestCase):
         worker_object = kwargs['args'][0]
         self.assertIsInstance(worker_object, RabbitMQWorker)
 
+    @mock.patch("logging.getLogger")
+    @mock.patch("multiprocessing.Process")
+    @mock.patch("threading.Thread")
+    @mock.patch("easy_job.workers.rabbitmq.RabbitMQRunner")
+    def test_normal_start(self, runner, thread, process, getLogger):
+        assert isinstance(process, mock.MagicMock)
+        assert isinstance(thread, mock.MagicMock)
+        # Arrange
+        worker_count = 4
+        logger = getLogger.return_value = mock.MagicMock()
+        expected_result = runner.return_value = "SOME_RETURN_VALUE"
+        result_backend = {
+            'result_backend_class': 'easy_job.result_backends.dummy.DummyBackend'
+        }
+        options = {
+            'serialization_method': 'json',
+            'use_threads': True,
+            'queue_name': 'queue',
+            'rabbitmq_configs': {}
+        }
+        # Act
+        initializer = RabbitMQInitializer(count=worker_count, logger="logger", result_backend=result_backend,
+                                          options=options)
+        result = initializer.start()
+        # Assert
+        logger.log.assert_called_once_with(10, "Starting {} RabbitMQ workers...".format(worker_count))
+        process.assert_not_called()
+        thread.assert_has_calls([mock.call(args=(mock.ANY,), target=mock.ANY), mock.call().start()] * worker_count)
+        self.assertEqual(result, expected_result)
+        _, args, kwargs = thread.mock_calls[0]
+        worker_object = kwargs['args'][0]
+        self.assertIsInstance(worker_object, RabbitMQWorker)
+
 
 class MPQueueWorkerTestCase(TestCase):
     @mock.patch("django.utils.module_loading.import_string")
