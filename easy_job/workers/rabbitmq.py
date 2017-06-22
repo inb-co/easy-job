@@ -92,13 +92,17 @@ class RabbitMQWorker(StoreResultMixin):
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def run(self):
-        self.log(logging.DEBUG, "Running the RabbitMQ worker: {}".format(os.getpid()))
-        with pika.BlockingConnection(pika.ConnectionParameters(**self.connection_params)) as connection:
-            channel = connection.channel()
-            channel.queue_declare(queue=self.queue_name, durable=True)
-            channel.basic_qos(prefetch_count=1)
-            channel.basic_consume(self.callback, queue=self.queue_name)
-            channel.start_consuming()
+        while True:
+            try:
+                self.log(logging.DEBUG, "Running the RabbitMQ worker: {}".format(os.getpid()))
+                with pika.BlockingConnection(pika.ConnectionParameters(**self.connection_params)) as connection:
+                    channel = connection.channel()
+                    channel.queue_declare(queue=self.queue_name, durable=True)
+                    channel.basic_qos(prefetch_count=1)
+                    channel.basic_consume(self.callback, queue=self.queue_name)
+                    channel.start_consuming()
+            except Exception as exp:
+                self.log(logging.ERROR, "Worker have issues while receiving: {}".format(exp))
 
 
 class RabbitMQInitializer(BaseInitializer):
