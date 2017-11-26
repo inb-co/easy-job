@@ -102,7 +102,12 @@ class RabbitMQWorker(StoreResultMixin):
                     channel.basic_consume(self.callback, queue=self.queue_name)
                     channel.start_consuming()
             except Exception as exp:
-                self.log(logging.ERROR, "Worker have issues while receiving: {}".format(exp))
+                self.log(
+                    logging.ERROR,
+                    "Worker have issues while receiving: {}".format(type(exp)),
+                    exception=exp,
+                    include_traceback=True
+                )
 
 
 class RabbitMQInitializer(BaseInitializer):
