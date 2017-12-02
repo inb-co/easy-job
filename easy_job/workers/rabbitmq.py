@@ -99,15 +99,13 @@ class RabbitMQWorker(StoreResultMixin):
                     channel = connection.channel()
                     channel.queue_declare(queue=self.queue_name, durable=True)
                     channel.basic_qos(prefetch_count=1)
-                    channel.basic_consume(self.callback, queue=self.queue_name)
-                    channel.start_consuming()
+                    for message_object in channel.consume(queue=self.queue_name, inactivity_timeout=10):
+                        if message_object is None:
+                            connection.process_data_events(time_limit=5)
+                        else:
+                            self.callback(channel, *message_object)
             except Exception as exp:
-                self.log(
-                    logging.ERROR,
-                    "Worker have issues while receiving: {}".format(type(exp)),
-                    exception=exp,
-                    include_traceback=True
-                )
+                self.log(logging.ERROR, "Worker have issues while receiving: {}".format(exp))
 
 
 class RabbitMQInitializer(BaseInitializer):
