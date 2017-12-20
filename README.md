@@ -10,6 +10,6 @@ please read the [documentations](http://easy-job.readthedocs.io)
 Projects that are using Easy-Job
 ================================
 
-*[Roozame](http://roozame.com)
+[Roozame](http://roozame.com)
 
 Feel free to create a PR and add you project to this list :)
